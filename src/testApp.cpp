@@ -8,9 +8,8 @@ void testApp::setup(){
   videoHeight = 480;
   
 
-  
-
   camera.listDevices();
+  
   camera.setDeviceID(5);
   laptop.setDeviceID(7);
   bendy.setDeviceID(6);
@@ -23,26 +22,31 @@ void testApp::setup(){
   panel.setup("Control Panel", ofGetWidth() - 300, 100, 300, 600);
   panel.addPanel("Chroma Key", 1, false);	
   panel.setWhichPanel("Chroma Key");
+	panel.addSlider("toilet threshold", "toiletThreshold", 100, 0, 255, false);
+	panel.addSlider("desk threshold", "deskThreshold", 100, 0, 255, false);
 
-	panel.addSlider("chroma threshold", "greenScreenThreshold", 100, 0, 255, false);
   
+  vector<string> names;
+  names.push_back("toilet");
+  names.push_back("desk");
+  
+  
+  panel.addMultiToggle("current key", "currentKey", 0, names);
   
   compare = false;
-  
-  
+
+  bendyImage.allocate(videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA);
+
   processedImage.allocate(videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA);
   background.allocate(1280, 720, OF_IMAGE_COLOR);
-  //cout << "load? " << background.loadImage("background_3.jpg") << endl;
-  //cout << "load? " << foreground.loadImage("foreground.png") << endl;
-  
-  grayVideo.allocate(videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA);
-  
+    
   
   shader.setup("chromakey", "chromakey");
   shader.printActiveUniforms();
 
   
   toiletKey = GABChromaKey(videoWidth, videoHeight);
+  deskKey = GABChromaKey(videoWidth, videoHeight);
 
 }
 
@@ -56,69 +60,36 @@ void testApp::update(){
   
   videoPixels = camera.getPixels();
   laptopPixels = laptop.getPixels();
+bendyPixels = bendy.getPixels();
+  
+  toiletTheshold = panel.getValueF("toiletThreshold");
+  deskThreshold = panel.getValueF("deskThreshold");
 
-  greenScreenThreshold = panel.getValueF("greenScreenThreshold");
-
+  currentKey = panel.getValueF("currentKey");
   
   toiletKey.setInput(videoPixels);
-  toiletKey.setThreshold(greenScreenThreshold);
+  toiletKey.setThreshold(toiletTheshold);
+  
+  deskKey.setInput(bendyPixels);
+  deskKey.setThreshold(deskThreshold);
   
   
   background.setFromPixels(laptopPixels, 1280, 720, OF_IMAGE_COLOR, true);
-
-  //texturePositionX = panel.getValueF("texturePositionX");
-  //texturePositionY = panel.getValueF("texturePositionY");
-
-  /*processedImage.setFromPixels(videoPixels, videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA, true);
-
-  
-  
-  videoAlphaPixels = processedImage.getPixels();
-
-  for (int i = 0; i < videoWidth*videoHeight; i++) {
-    int deltaR = abs(videoPixels[i*3+0] - colorGreenScreen.r);
-    int deltaG = abs(videoPixels[i*3+1] - colorGreenScreen.g);
-    int deltaB = abs(videoPixels[i*3+2] - colorGreenScreen.b);
-    
-    
-    videoAlphaPixels[i*4] = videoPixels[i*3];
-    videoAlphaPixels[i*4 + 1] = videoPixels[i*3 + 1];
-    videoAlphaPixels[i*4 + 2] = videoPixels[i*3 + 2];
-    
-    
-
-    if(deltaR <= greenScreenThreshold && deltaG <= greenScreenThreshold && deltaB <= greenScreenThreshold ){
-     //float deltaSum = deltaR + deltaG + deltaB;
-     //float alpha = ofMap(deltaSum, 0, 255 * 3, 0, 255, true);
-     videoAlphaPixels[i*4 + 3] = 0;
-    } else {
-      videoAlphaPixels[i*4 + 3] = 255;
-
-    }
-    
-  //  float ave = (videoPixels[i*3] + videoPixels[i*3 +1] + videoPixels[i*3 +2]) /3.0;
-    
-    videoAlphaPixels[i*4] = videoPixels[i*3];
-    videoAlphaPixels[i*4 + 1] = videoPixels[i*3 + 1];
-    videoAlphaPixels[i*4 + 2] = videoPixels[i*3 + 2];
-  }
-  */
-  //processedImage.setFromPixels(videoAlphaPixels, videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA, true);
   
   processedImage.setFromPixels(toiletKey.getOutput(), videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA, true);
+  bendyImage.setFromPixels(deskKey.getOutput(), videoWidth, videoHeight, OF_IMAGE_COLOR_ALPHA, true);
    
   
-
+  
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
-  //laptop.draw(0,0);
-  //camera.draw(0, 0);
+
   background.draw(0,0, 1280, 720);
-  bendy.draw(480, 0);
+  //bendy.draw(480, 0);
   
- // foreground.draw(-180,-120, backgroundWidth*1.3, backgroundHeight*1.3);
+  bendyImage.draw(480,0);
   processedImage.draw(0, 0, videoWidth, videoHeight);
 
   
@@ -160,7 +131,7 @@ void testApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
-  if(key == 356){
+ /* if(key == 356){
   
     greenScreenThreshold -= 1;
   } else if(key == 358){
@@ -170,6 +141,7 @@ void testApp::keyReleased(int key){
   }
   
   cout << greenScreenThreshold << endl;
+  */
 
 }
 
@@ -184,22 +156,34 @@ void testApp::mousePressed(int x, int y, int button){
   
   
   if(x < videoWidth && y < videoHeight){
-    if(compare){
+    /*if(compare){
       int i = y * videoWidth + x;
       cout << "current thresh: " << greenScreenThreshold << endl;
       cout << "diff: r: " << abs(videoPixels[i*3+0] - colorGreenScreen.r) << " g: "<< abs(videoPixels[i*3+1] - colorGreenScreen.g)  << " b: " << abs(videoPixels[i*3+2] - colorGreenScreen.b) << endl;
     }
-    else {
+    else { */
+
+    if(currentKey == 0){
+      
       colorGreenScreen.r = videoPixels[3 * (videoWidth * y + x)];
       colorGreenScreen.g = videoPixels[3 * (videoWidth * y + x) + 1];
       colorGreenScreen.b = videoPixels[3 * (videoWidth * y + x) + 2];
-    
-      ofBackground(colorGreenScreen.r, colorGreenScreen.g, colorGreenScreen.b);
-      cout << "r: " << colorGreenScreen.r << " g: " << colorGreenScreen.g << " b: " << colorGreenScreen.b << endl;
-      
       toiletKey.setKeyColor(colorGreenScreen);
-
+    } else {
+      
+      
+      colorGreenScreen.r = bendyPixels[3 * (videoWidth * y + (x-480))];
+      colorGreenScreen.g = bendyPixels[3 * (videoWidth * y + (x-480)) + 1];
+      colorGreenScreen.b = bendyPixels[3 * (videoWidth * y + (x-480)) + 2];
+      deskKey.setKeyColor(colorGreenScreen);
     }
+    
+    
+    
+    ofBackground(colorGreenScreen.r, colorGreenScreen.g, colorGreenScreen.b);
+    cout << "r: " << colorGreenScreen.r << " g: " << colorGreenScreen.g << " b: " << colorGreenScreen.b << endl;
+    
+    //}
   }
   
 

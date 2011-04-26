@@ -25,8 +25,6 @@ class testApp : public ofBaseApp{
 
   ofVideoGrabber laptop;
   ofVideoGrabber camera;
-
-  
   ofVideoGrabber bendy;
 
   int videoWidth;
@@ -34,20 +32,25 @@ class testApp : public ofBaseApp{
   
   unsigned char * videoPixels;
   unsigned char * laptopPixels;
-  unsigned char * videoAlphaPixels;
+
+  unsigned char * bendyPixels;
   
   
-  GABChromaKey toiletKey;
+    
+  GABChromaKey toiletKey, deskKey;
   
 
   bool compare;
   
-  int greenScreenThreshold;
+  int toiletTheshold;
+  int deskThreshold;
   
-  int texturePositionX;
-  int texturePositionY;
+  int currentKey;
+
 
   ofImage processedImage;
+  
+  ofImage bendyImage;
   
   ofColor colorGreenScreen;
   
@@ -56,9 +59,7 @@ class testApp : public ofBaseApp{
   ofxShader shader;
   
   ofImage background;
-  ofImage foreground;
   
-  ofImage grayVideo;
   
   
   int backgroundWidth;
