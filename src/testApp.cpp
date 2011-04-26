@@ -155,14 +155,7 @@ void testApp::mouseMoved(int x, int y ){
 void testApp::mousePressed(int x, int y, int button){
   
   
-  if(x < videoWidth && y < videoHeight){
-    /*if(compare){
-      int i = y * videoWidth + x;
-      cout << "current thresh: " << greenScreenThreshold << endl;
-      cout << "diff: r: " << abs(videoPixels[i*3+0] - colorGreenScreen.r) << " g: "<< abs(videoPixels[i*3+1] - colorGreenScreen.g)  << " b: " << abs(videoPixels[i*3+2] - colorGreenScreen.b) << endl;
-    }
-    else { */
-
+  if(compare){
     if(currentKey == 0){
       
       colorGreenScreen.r = videoPixels[3 * (videoWidth * y + x)];
@@ -183,7 +176,6 @@ void testApp::mousePressed(int x, int y, int button){
     ofBackground(colorGreenScreen.r, colorGreenScreen.g, colorGreenScreen.b);
     cout << "r: " << colorGreenScreen.r << " g: " << colorGreenScreen.g << " b: " << colorGreenScreen.b << endl;
     
-    //}
   }
   
 
