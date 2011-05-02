@@ -28,6 +28,8 @@ class testApp : public ofBaseApp{
   ofVideoGrabber camera;
   ofVideoGrabber bendy;
 
+  bool drawPanel;
+  
   int videoWidth;
   int videoHeight;
   

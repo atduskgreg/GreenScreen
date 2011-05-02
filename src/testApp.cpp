@@ -54,6 +54,8 @@ void testApp::setup(){
   camera1Pos = ofPoint( 480,0 );
   
   syphonServer.setName("Thesis Green");
+  
+  //camera.videoSettings();
 
 }
 
@@ -100,8 +102,9 @@ void testApp::draw(){
   processedImage.draw(camera1Pos.x, camera1Pos.y, videoWidth, videoHeight);
 
   
-  
-  panel.draw();
+  if(drawPanel){
+    panel.draw();
+  }
   
  // 
 // shader.begin();
@@ -139,6 +142,12 @@ void testApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void testApp::keyReleased(int key){
+  cout << key << endl;
+  
+  if(key == 112){
+    drawPanel = !drawPanel;
+  }
+  
  /* if(key == 356){
   
     greenScreenThreshold -= 1;
