@@ -10,9 +10,10 @@ void testApp::setup(){
 
   camera.listDevices();
   
-  camera.setDeviceID(5);
+  camera.setDeviceID(6);
+  bendy.setDeviceID(5);
+
   laptop.setDeviceID(7);
-  bendy.setDeviceID(6);
   
   camera.initGrabber(videoWidth, videoHeight, true);
   laptop.initGrabber(1280, 720, true);
@@ -29,7 +30,8 @@ void testApp::setup(){
   vector<string> names;
   names.push_back("toilet");
   names.push_back("desk");
-  
+  names.push_back("panel");
+
   
   panel.addMultiToggle("current key", "currentKey", 0, names);
   
@@ -47,6 +49,11 @@ void testApp::setup(){
   
   toiletKey = GABChromaKey(videoWidth, videoHeight);
   deskKey = GABChromaKey(videoWidth, videoHeight);
+  
+  camera1Pos = ofPoint( 0,0 );
+  camera1Pos = ofPoint( 480,0 );
+  
+  syphonServer.setName("Thesis Green");
 
 }
 
@@ -89,8 +96,8 @@ void testApp::draw(){
   background.draw(0,0, 1280, 720);
   //bendy.draw(480, 0);
   
-  bendyImage.draw(480,0);
-  processedImage.draw(0, 0, videoWidth, videoHeight);
+  bendyImage.draw(camera2Pos.x,camera2Pos.y);
+  processedImage.draw(camera1Pos.x, camera1Pos.y, videoWidth, videoHeight);
 
   
   
@@ -119,7 +126,8 @@ void testApp::draw(){
   
   ofSetColor(255, 255, 255);
   
-  
+  syphonServer.publishScreen();
+
 }
 
 //--------------------------------------------------------------
@@ -162,7 +170,7 @@ void testApp::mousePressed(int x, int y, int button){
       colorGreenScreen.g = videoPixels[3 * (videoWidth * y + x) + 1];
       colorGreenScreen.b = videoPixels[3 * (videoWidth * y + x) + 2];
       toiletKey.setKeyColor(colorGreenScreen);
-    } else {
+    } else  {
       
       
       colorGreenScreen.r = bendyPixels[3 * (videoWidth * y + (x-480))];
@@ -185,8 +193,19 @@ void testApp::mousePressed(int x, int y, int button){
 }
 
 //--------------------------------------------------------------
-void testApp::mouseDragged(int x, int y, int button){
-	panel.mouseDragged(x,y,button);
+void testApp::mouseDragged(int x, int y, int button){ 
+  
+  if(!compare){
+    if(currentKey == 0){
+      camera1Pos.x = x;
+      camera1Pos.y = y;
+    } else if(currentKey == 1)  {
+      camera2Pos.x = x;
+      camera2Pos.y = y;
+    }
+  } 
+
+    panel.mouseDragged(x,y,button);
 }
 
 

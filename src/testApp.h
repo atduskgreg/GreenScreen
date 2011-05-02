@@ -5,6 +5,7 @@
 #include "ofMain.h"
 #include "ofxControlPanel.h"
 #include "ofxShader.h"
+#include "ofxSyphon.h"
 
 #include "GABChromaKey.h"
 
@@ -35,7 +36,8 @@ class testApp : public ofBaseApp{
 
   unsigned char * bendyPixels;
   
-  
+  ofxSyphonServer syphonServer;
+
     
   GABChromaKey toiletKey, deskKey;
   
@@ -60,6 +62,9 @@ class testApp : public ofBaseApp{
   
   ofImage background;
   
+
+  ofPoint camera1Pos;
+  ofPoint camera2Pos;
   
   
   int backgroundWidth;
