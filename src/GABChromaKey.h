@@ -16,6 +16,7 @@ public:
   
   void setInput( unsigned char * _inputPixels );
   void setThreshold( float _threshold );
+    
   void setKeyColor( ofColor  _keyColor);
   
   void performKey();

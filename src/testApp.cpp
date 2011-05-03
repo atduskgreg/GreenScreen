@@ -26,6 +26,9 @@ void testApp::setup(){
 	panel.addSlider("toilet threshold", "toiletThreshold", 100, 0, 255, false);
 	panel.addSlider("desk threshold", "deskThreshold", 100, 0, 255, false);
 
+	panel.addSlider("toilet size", "toiletSize", 1, 0, 2, false);
+	panel.addSlider("desk size", "deskSize", 1, 0, 2, false);
+
   
   vector<string> names;
   names.push_back("toilet");
@@ -76,6 +79,9 @@ bendyPixels = bendy.getPixels();
 
   currentKey = panel.getValueF("currentKey");
   
+  toiletSize = panel.getValueF("toiletSize");
+  deskSize = panel.getValueF("deskSize");
+  
   toiletKey.setInput(videoPixels);
   toiletKey.setThreshold(toiletTheshold);
   
@@ -98,9 +104,15 @@ void testApp::draw(){
   background.draw(0,0, 1280, 720);
   //bendy.draw(480, 0);
   
-  bendyImage.draw(camera2Pos.x,camera2Pos.y);
-  processedImage.draw(camera1Pos.x, camera1Pos.y, videoWidth, videoHeight);
-
+  bendyImage.draw(camera2Pos.x,camera2Pos.y, videoWidth * deskSize, videoHeight * deskSize);
+  
+  ofPushMatrix();
+  ofEnableAlphaBlending();
+  ofSetColor(255, 255, 255, 100);
+  processedImage.draw(camera1Pos.x, camera1Pos.y, videoWidth * toiletSize, videoHeight * toiletSize);
+  ofPopMatrix();
+  
+  ofSetColor(255, 255, 255);
   
   if(drawPanel){
     panel.draw();
@@ -133,10 +145,70 @@ void testApp::draw(){
 
 }
 
+
+
+/*
+GABChromaKey testApp::currentKey(){
+  if(currentKey == 0){
+    return toiletKey;
+  } else {
+    return deskKey;
+  }
+}
+ */
+
 //--------------------------------------------------------------
 void testApp::keyPressed(int key){
   if(key == ' '){
     compare = !compare;
+  }
+
+  if(key == 112){
+    drawPanel = !drawPanel;
+  }
+  
+  
+  
+  if(key == 356){
+    if(currentKey == 0){
+      camera1Pos.x = camera1Pos.x - 1;
+      
+    } else {
+      camera2Pos.x = camera2Pos.x - 1;
+
+    }
+  }
+  
+  if(key == 358){
+    if(currentKey == 0){
+      camera1Pos.x = camera1Pos.x + 1;
+      
+    } else {
+      camera2Pos.x = camera2Pos.x + 1;
+      
+    }
+    
+  }
+  
+  if(key == 357){
+    if(currentKey == 0){
+      camera1Pos.y = camera1Pos.y - 1;
+      
+    } else {
+      camera2Pos.y = camera2Pos.y - 1;
+      
+    }
+  }
+  
+  if(key == 359){
+    if(currentKey == 0){
+      camera1Pos.y = camera1Pos.y + 1;
+      
+    } else {
+      camera2Pos.y = camera2Pos.y + 1;
+      
+    }
+    
   }
 }
 
@@ -144,9 +216,7 @@ void testApp::keyPressed(int key){
 void testApp::keyReleased(int key){
   cout << key << endl;
   
-  if(key == 112){
-    drawPanel = !drawPanel;
-  }
+  
   
  /* if(key == 356){
   

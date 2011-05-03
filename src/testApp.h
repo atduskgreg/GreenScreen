@@ -23,6 +23,7 @@ class testApp : public ofBaseApp{
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		void windowResized(int w, int h);
+  
 
   ofVideoGrabber laptop;
   ofVideoGrabber camera;
@@ -32,6 +33,9 @@ class testApp : public ofBaseApp{
   
   int videoWidth;
   int videoHeight;
+  
+  float toiletSize;
+  float deskSize;
   
   unsigned char * videoPixels;
   unsigned char * laptopPixels;
